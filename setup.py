@@ -4,7 +4,7 @@ setup(name='django-hooked',
     version='0.1.0',
     author='G Adventures',
     author_email='software@gadventures.com',
-    url='https://github.com/gadventures/django-hooked',
+    url='https://github.com/gadventures/django-gapi-hooked',
     packages=[
         'hooked',
     ],
