@@ -28,7 +28,7 @@ There are two ways you can do this. First, you can simply subclass the
 
     from hooked import WebhookReceiverView
 
-    class MyReceiver(WebhookReceiverview)L:
+    class MyReceiver(WebhookReceiverView):
         def handle_webhook_event(self, event):
             # Just an example ...
             my_queue.push(event=event)
