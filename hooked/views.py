@@ -78,10 +78,16 @@ class WebhookReceiverView(View):
 
     def is_valid_href(self, event):
         # Check that the href points to the right place
-        resource = event['resource']
-        resource_id = event['data']['id']
+        path_parts = [
+            event['resource'],
+            event['data']['id'],
+        ]
+        if 'variation_id' in event['data'] and event['data']['variation_id']:
+            path_parts.append(event['data']['variation_id'])
+
         expected = urljoin(
-            API_ROOT, '{0}/{1}'.format(resource, resource_id)
+            API_ROOT,
+            '/'.join(path_parts)
         )
         actual = event['data']['href']
 
