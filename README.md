@@ -24,7 +24,8 @@ Signals to notify connected receivers that an event has occurred.
 ## Listening to events
 
 There are two ways you can do this. First, you can simply subclass the
-`handle_webhook_event` function on `hooked.views.WebhookReceiverview`:
+`hooked.views.WebhookReceiverView` and override the `handle_webhook_event`
+method:
 
     from hooked import WebhookReceiverView
 
@@ -33,10 +34,25 @@ There are two ways you can do this. First, you can simply subclass the
             # Just an example ...
             my_queue.push(event=event)
 
+You can also break up the handlers logically by resource. Before dispatching
+the event to `handle_webhook_event`, `WebhookReceiverView` will attempt to find
+and call a method called `handle_<resource_name>` -- for instance,
+`handle_itineraries` or `handle_profiles`. If no resource-specific handler is
+found, we fall back to using `handle_webhook_event`:
 
-Or, you can use Signals to de-couple how webhooks are handled. This is useful
-for larger projects that may handle specific resources differently. 
+    from hooked import WebhookReceiverView
 
+    class MyReceiver(WebhookReceiverView):
+        def handle_profiles(self, event):
+            # Do some profile-specific things...
+            profile_task.push(event=event)
+
+        def handle_webhook_event(self, event):
+            # Just an example ...
+            my_queue.push(event=event)
+
+Alternately, you can use Signals to de-couple how webhooks are handled. This is
+useful for larger projects that may handle specific resources differently.
 
     from hooked import webhook_event
 

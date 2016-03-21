@@ -100,8 +100,16 @@ class WebhookReceiverView(View):
     def _handle_webhook_event(self, event):
         resource = event['resource']
         webhook_event.send(sender=resource, event=event)
-        self.handle_webhook_event(event)
+
+        # Find the handler for this resource
+        target_handler = 'handle_{}'.format(resource)
+        handler = getattr(self, target_handler, None)
+        if not handler or not callable(handler):
+            # Whoops, no resource-specific handler found, use the default
+            handler = self.handle_webhook_event
+
+        handler(event)
 
     def handle_webhook_event(self, event):
-        """ Hook for handling webhook events. """
+        """ Default hook for handling webhook events. """
         pass
