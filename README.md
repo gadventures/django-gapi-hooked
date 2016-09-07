@@ -21,6 +21,14 @@ event from the G API. The view takes care of responding with a proper SHA256
 key, validating the webhook event (prevents abuse!), and finally, uses Django
 Signals to notify connected receivers that an event has occurred.
 
+### Settings
+
+To make sure webhooks are validated properly you'll need to include the following in your settings.
+
+    GAPI_API_ROOT = 'https://rest.gadventures.com'
+    GAPI_WEBHOOKS_VALIDATION_KEY = <your webhooks validation key>
+
+
 ## Listening to events
 
 There are two ways you can do this. First, you can simply subclass the
