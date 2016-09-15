@@ -29,15 +29,15 @@ class WebhookReceiverView(View):
             events = json.loads(request.body)
         except ValueError:
             self.log_failure('Invalid webhook POST', exc_info=True)
-            return HttpResponseBadRequest('Cannot parse JSON')
+            raise HttpResponseBadRequest('Cannot parse JSON')
 
         if not isinstance(events, list):
             self.log_failure('Webhook events is not a list')
-            return HttpResponseBadRequest(INVALID_EVENT_MESSAGE)
+            raise HttpResponseBadRequest(INVALID_EVENT_MESSAGE)
 
         if not self.validate_events(events):
             self.log_failure('Webhook events do not validate')
-            return HttpResponseBadRequest(INVALID_EVENT_MESSAGE)
+            raise HttpResponseBadRequest(INVALID_EVENT_MESSAGE)
         return events
 
     def post(self, request, *args, **kwargs):
