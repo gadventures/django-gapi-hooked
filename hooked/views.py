@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 
 INVALID_EVENT_MESSAGE = 'Invalid event'
 
-WEBHOOKS_VALIDATION_KEY = getattr(settings, 'GAPI_WEBHOOKS_VALIDATION_KEY', None)
-API_ROOT = getattr(settings, 'GAPI_API_ROOT', None)
 
 class WebhookReceiverView(View):
     @csrf_exempt
@@ -44,16 +42,17 @@ class WebhookReceiverView(View):
 
         remote_addr = request.META['REMOTE_ADDR']
 
-        logger.info('Received POST request from %s to webhook rece2iver',
+        logger.info('Received POST request from %s to webhook receiver',
             remote_addr, extra={'request': request})
 
         events = self.clean_events(request)
 
         for event in events:
-            self._handle_webhook_event(event)
+            handler = self.get_event_handler(event)
+            handler(event)
 
         response = HttpResponse('OK')
-        response['X-Application-SHA256'] = WEBHOOKS_VALIDATION_KEY
+        response['X-Application-SHA256'] = getattr(settings, 'GAPI_WEBHOOKS_VALIDATION_KEY', None)
         return response
 
     def validate_events(self, events):
@@ -86,7 +85,7 @@ class WebhookReceiverView(View):
             path_parts.append(event['data']['variation_id'])
 
         expected = urljoin(
-            API_ROOT,
+            getattr(settings, 'GAPI_API_ROOT', None),
             '/'.join(path_parts)
         )
         actual = event['data']['href']
@@ -97,7 +96,7 @@ class WebhookReceiverView(View):
 
         return True
 
-    def _handle_webhook_event(self, event):
+    def get_event_handler(self, event):
         resource = event['resource']
         webhook_event.send(sender=resource, event=event)
 
@@ -108,7 +107,7 @@ class WebhookReceiverView(View):
             # Whoops, no resource-specific handler found, use the default
             handler = self.handle_webhook_event
 
-        handler(event)
+        return handler
 
     def handle_webhook_event(self, event):
         """ Default hook for handling webhook events. """

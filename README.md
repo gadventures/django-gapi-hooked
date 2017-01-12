@@ -63,3 +63,7 @@ useful for larger projects that may handle specific resources differently.
     @receiver(webhook_event, sender="profiles")
     def my_handler(sender, event, **kwargs):
         profile_task.push(event=event)
+
+## Running tests
+
+    python setup.py pytest
