@@ -48,8 +48,7 @@ class WebhookReceiverView(View):
         events = self.clean_events(request)
 
         for event in events:
-            handler = self.get_event_handler(event)
-            handler(event)
+            self.process_event(event)
 
         response = HttpResponse('OK')
         response['X-Application-SHA256'] = getattr(settings, 'GAPI_WEBHOOKS_VALIDATION_KEY', None)
@@ -96,12 +95,19 @@ class WebhookReceiverView(View):
 
         return True
 
-    def get_event_handler(self, event):
-        resource = event['resource']
-        webhook_event.send(sender=resource, event=event)
+    def process_event(self, event):
+        """
+        Send a signal for the given event, find and dispatch to an appropriate
+        event handler.
+        """
+        webhook_event.send(sender=event['resource'], event=event)
 
+        handler = self.get_event_handler(event)
+        handler(event)
+
+    def get_event_handler(self, event):
         # Find the handler for this resource
-        target_handler = 'handle_{}'.format(resource)
+        target_handler = 'handle_{}'.format(event['resource'])
         handler = getattr(self, target_handler, None)
         if not handler or not callable(handler):
             # Whoops, no resource-specific handler found, use the default
