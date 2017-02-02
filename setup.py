@@ -13,7 +13,6 @@ setup(
     packages=[
         'django-gapi-hooked',
     ],
-    test_suite='hooked.runtests.main',
     install_requires=[
         'Django>=1.6',
     ],
@@ -22,5 +21,11 @@ setup(
         'g adventures',
         'g api',
         'gapipy'
-    ]
+    ],
+    setup_requires=[
+        'pytest-runner',
+    ],
+    tests_require=[
+        'pytest',
+    ],
 )
