@@ -1,6 +1,6 @@
 from setuptools import setup
 
-current_version = '0.2.0'
+current_version = '0.3.0'
 
 setup(
     name='django-gapi-hooked',
@@ -11,7 +11,7 @@ setup(
     download_url='https://github.com/gadventures/django-gapi-hooked/tarball/%s' % current_version,
     url='https://github.com/gadventures/django-gapi-hooked',
     packages=[
-        'django-gapi-hooked',
+        'hooked',
     ],
     install_requires=[
         'Django>=1.6',
