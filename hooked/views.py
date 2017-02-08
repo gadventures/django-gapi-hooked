@@ -12,6 +12,7 @@ from .signals import webhook_event
 logger = logging.getLogger(__name__)
 
 INVALID_EVENT_MESSAGE = 'Invalid event'
+DEFAULT_API_ROOT = 'https://rest.gadventures.com/'
 
 
 class WebhookReceiverView(View):
@@ -84,7 +85,7 @@ class WebhookReceiverView(View):
             path_parts.append(event['data']['variation_id'])
 
         expected = urljoin(
-            getattr(settings, 'GAPI_API_ROOT', None),
+            getattr(settings, 'GAPI_API_ROOT', DEFAULT_API_ROOT),
             '/'.join(path_parts)
         )
         actual = event['data']['href']

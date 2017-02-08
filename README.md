@@ -28,7 +28,6 @@ received events to the handlers that you have defined.
 
 To make sure webhooks are validated properly you'll need to include the following in your settings.
 
-    GAPI_API_ROOT = 'https://rest.gadventures.com'
     GAPI_WEBHOOKS_VALIDATION_KEY = <your webhooks validation key>
 
 
