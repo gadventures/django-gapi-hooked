@@ -3,23 +3,39 @@ import logging
 from urlparse import urljoin
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from .signals import webhook_event
+from .utils import compute_request_signature, compute_webhook_validation_key
 
 logger = logging.getLogger(__name__)
 
-INVALID_EVENT_MESSAGE = 'Invalid event'
+APP_KEY_SETTING = 'GAPI_APPLICATION_KEY'
+FAIL_ON_MISMATCH_SETTING = 'HOOKED_FAIL_ON_BAD_SIGNATURE'
 DEFAULT_API_ROOT = 'https://rest.gadventures.com/'
 
 
+class ErrorMessages(object):
+    INVALID_EVENT = 'Invalid event'
+    INVALID_SIGNATURE = 'X-Gapi-Signature header does not match computed signature'
+    INVALID_JSON = 'Cannot parse JSON'
+
+
 def add_validation_key_to_response(response):
-    response['X-Application-SHA256'] = getattr(settings, 'GAPI_WEBHOOKS_VALIDATION_KEY', None)
+    response['X-Application-SHA256'] = compute_webhook_validation_key(
+        getattr(settings, APP_KEY_SETTING))
 
 
 class WebhookReceiverView(View):
+    def __init__(self, *args, **kwargs):
+        """ Check that required settings are present. """
+        if not hasattr(settings, APP_KEY_SETTING):
+            raise ImproperlyConfigured(
+                'You must set {} to your G API application key'.format(APP_KEY_SETTING))
+
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super(WebhookReceiverView, self).dispatch(request, *args, **kwargs)
@@ -27,20 +43,49 @@ class WebhookReceiverView(View):
     def log_failure(self, message, **kwargs):
         logger.warning(message, extra={'body': self.request.body}, **kwargs)
 
+    def check_webhook_signature(self, request):
+        """
+        Given a request, check that its `X-Gapi-Signature` header matches our
+        own calculated hash.
+
+        If settings.HOOKED_FAIL_ON_BAD_SIGNATURE is set to True and our
+        computed signature does not match the header, an exception will be
+        raised. (If it is set to False, or not set and our signatures do not
+        match we just log an error.)
+        """
+        app_key = getattr(settings, APP_KEY_SETTING)
+        fail_on_mismatch = getattr(settings, FAIL_ON_MISMATCH_SETTING, False)
+
+        computed_signature = compute_request_signature(app_key, request.body)
+        claimed_signature = request.META.get('HTTP_X_GAPI_SIGNATURE', None)
+
+        if computed_signature == claimed_signature:
+            return
+
+        self.log_failure(
+            'Mismatch between computed and claimed signature of incoming '
+            'events. I computed {}, but the HTTP header said I should '
+            'expect to find {}'.format(computed_signature, claimed_signature))
+
+        if fail_on_mismatch:
+            raise ValueError(ErrorMessages.INVALID_SIGNATURE)
+
     def clean_events(self, request):
+        self.check_webhook_signature(request)
+
         try:
             events = json.loads(request.body)
         except ValueError:
             self.log_failure('Invalid webhook POST', exc_info=True)
-            raise ValueError('Cannot parse JSON')
+            raise ValueError(ErrorMessages.INVALID_JSON)
 
         if not isinstance(events, list):
             self.log_failure('Webhook events is not a list')
-            raise ValueError(INVALID_EVENT_MESSAGE)
+            raise ValueError(ErrorMessages.INVALID_EVENT)
 
         if not self.validate_events(events):
             self.log_failure('Webhook events do not validate')
-            raise ValueError(INVALID_EVENT_MESSAGE)
+            raise ValueError(ErrorMessages.INVALID_EVENT)
         return events
 
     def post(self, request, *args, **kwargs):

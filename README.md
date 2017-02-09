@@ -26,9 +26,21 @@ received events to the handlers that you have defined.
 
 ### Settings
 
-To make sure webhooks are validated properly you'll need to include the following in your settings.
+To make sure webhooks are validated properly you'll need to include the
+following in your settings.
 
-    GAPI_WEBHOOKS_VALIDATION_KEY = <your webhooks validation key>
+    GAPI_APPLICATION_KEY = <your application key>
+
+
+#### Optional
+
+If you'd like your webhook receiver to reject incoming events when the computed
+signature does not match the signature delivered with the event data, include
+the following in your settings:
+
+    HOOKED_FAIL_ON_BAD_SIGNATURE = True
+
+NB: By default, when a mismatch of signatures occurs we will simply log a warning.
 
 
 ## Handling events

@@ -27,5 +27,6 @@ setup(
     ],
     tests_require=[
         'pytest',
+        'pytest-django',
     ],
 )
