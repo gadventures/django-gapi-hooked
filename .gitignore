@@ -2,3 +2,5 @@
 *.egg-info
 *.pyc
 .cache
+.eggs
+.tox
