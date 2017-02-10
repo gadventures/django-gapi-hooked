@@ -15,6 +15,10 @@ INVALID_EVENT_MESSAGE = 'Invalid event'
 DEFAULT_API_ROOT = 'https://rest.gadventures.com/'
 
 
+def add_validation_key_to_response(response):
+    response['X-Application-SHA256'] = getattr(settings, 'GAPI_WEBHOOKS_VALIDATION_KEY', None)
+
+
 class WebhookReceiverView(View):
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
@@ -28,15 +32,15 @@ class WebhookReceiverView(View):
             events = json.loads(request.body)
         except ValueError:
             self.log_failure('Invalid webhook POST', exc_info=True)
-            raise HttpResponseBadRequest('Cannot parse JSON')
+            raise ValueError('Cannot parse JSON')
 
         if not isinstance(events, list):
             self.log_failure('Webhook events is not a list')
-            raise HttpResponseBadRequest(INVALID_EVENT_MESSAGE)
+            raise ValueError(INVALID_EVENT_MESSAGE)
 
         if not self.validate_events(events):
             self.log_failure('Webhook events do not validate')
-            raise HttpResponseBadRequest(INVALID_EVENT_MESSAGE)
+            raise ValueError(INVALID_EVENT_MESSAGE)
         return events
 
     def post(self, request, *args, **kwargs):
@@ -46,13 +50,18 @@ class WebhookReceiverView(View):
         logger.info('Received POST request from %s to webhook receiver',
             remote_addr, extra={'request': request})
 
-        events = self.clean_events(request)
+        try:
+            events = self.clean_events(request)
+        except ValueError as v:
+            response = HttpResponseBadRequest(v.message)
+            add_validation_key_to_response(response)
+            return response
 
         for event in events:
             self.process_event(event)
 
         response = HttpResponse('OK')
-        response['X-Application-SHA256'] = getattr(settings, 'GAPI_WEBHOOKS_VALIDATION_KEY', None)
+        add_validation_key_to_response(response)
         return response
 
     def validate_events(self, events):
