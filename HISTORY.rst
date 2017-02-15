@@ -11,8 +11,14 @@ Unreleased (master branch)
   ``profiles`` events without having to write your own routing code, see README
   for examples)
 * Add a (presently very small) test suite
-* ``GAPI_API_ROOT`` is no longer a required setting, it now defaults to
-  ``"https://rest.gadventures.com"``
+* Settings changes:
+    * ``GAPI_API_ROOT`` is no longer required, it defaults to
+    ``"https://rest.gadventures.com"``
+    
+    * ``GAPI_APPLICATION_KEY`` is now required
+    
+    * ``GAPI_WEBHOOKS_VALIDATION_KEY`` is no longer used at all (we compute this
+    value from your application key)
 
 0.3.0 (2016-09-15)
 ------------------
