@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 try:
     from functools import singledispatch
 except ImportError:
@@ -43,7 +41,6 @@ def compute_request_signature(app_key, request_body):
 def encode_if_not_bytes(data):
     data = data.encode('utf-8')
     return data
-
 
 @encode_if_not_bytes.register(bytes)
 def _(data):
