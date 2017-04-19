@@ -42,6 +42,7 @@ def encode_if_not_bytes(data):
     data = data.encode('utf-8')
     return data
 
+
 @encode_if_not_bytes.register(bytes)
 def _(data):
     return data
