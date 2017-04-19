@@ -11,7 +11,8 @@ def compute_webhook_validation_key(app_key):
     To successfully respond to incoming webhooks we include this value in
     our response's `X-Application-SHA256` header.
     """
-    return hashlib.sha256(app_key.encode('utf-8')).hexdigest()
+    return hashlib.sha256(
+        encode_if_not_bytes(app_key)).hexdigest()
 
 
 def compute_request_signature(app_key, request_body):
@@ -25,6 +26,16 @@ def compute_request_signature(app_key, request_body):
     header.
     """
     return hmac.new(
-        app_key.encode('utf-8'),
-        request_body.encode('utf-8'),
+        encode_if_not_bytes(app_key),
+        encode_if_not_bytes(request_body),
         hashlib.sha256).hexdigest()
+
+
+def encode_if_not_bytes(data):
+    # This works in Py2 and 3: `bytes` is just an alias for `str` for Python 2
+    # versions since 2.6 (https://docs.python.org/3/whatsnew/2.6.html#pep-3112-byte-literals)
+    if isinstance(data, bytes):
+        return data
+
+    data = data.encode('utf-8')
+    return data
