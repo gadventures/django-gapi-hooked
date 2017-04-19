@@ -1,6 +1,11 @@
+from __future__ import absolute_import, unicode_literals
+
 import json
 import logging
-from urlparse import urljoin
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -19,9 +24,9 @@ DEFAULT_API_ROOT = 'https://rest.gadventures.com/'
 
 
 class ErrorMessages(object):
-    INVALID_EVENT = 'Invalid event'
-    INVALID_SIGNATURE = 'X-Gapi-Signature header does not match computed signature'
-    INVALID_JSON = 'Cannot parse JSON'
+    INVALID_EVENT = b'Invalid event'
+    INVALID_SIGNATURE = b'X-Gapi-Signature header does not match computed signature'
+    INVALID_JSON = b'Cannot parse JSON'
 
 
 def add_validation_key_to_response(response):
@@ -98,7 +103,7 @@ class WebhookReceiverView(View):
         try:
             events = self.clean_events(request)
         except ValueError as v:
-            response = HttpResponseBadRequest(v.message)
+            response = HttpResponseBadRequest(v.args[0])
             add_validation_key_to_response(response)
             return response
 

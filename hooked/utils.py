@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+
+try:
+    from functools import singledispatch
+except ImportError:
+    from singledispatch import singledispatch
+
 import hashlib
 import hmac
 
@@ -24,7 +31,20 @@ def compute_request_signature(app_key, request_body):
     that this value matches the data in the request's `X-Gapi-Signature`
     header.
     """
+    request_body = encode_if_not_bytes(request_body)
+
     return hmac.new(
         app_key.encode('utf-8'),
-        request_body.encode('utf-8'),
+        request_body,
         hashlib.sha256).hexdigest()
+
+
+@singledispatch
+def encode_if_not_bytes(data):
+    data = data.encode('utf-8')
+    return data
+
+
+@encode_if_not_bytes.register(bytes)
+def _(data):
+    return data
