@@ -11,7 +11,8 @@ def compute_webhook_validation_key(app_key):
     To successfully respond to incoming webhooks we include this value in
     our response's `X-Application-SHA256` header.
     """
-    return hashlib.sha256(app_key.encode('utf-8')).hexdigest()
+    return hashlib.sha256(
+        encode_if_not_bytes(app_key)).hexdigest()
 
 
 def compute_request_signature(app_key, request_body):
@@ -24,11 +25,9 @@ def compute_request_signature(app_key, request_body):
     that this value matches the data in the request's `X-Gapi-Signature`
     header.
     """
-    request_body = encode_if_not_bytes(request_body)
-
     return hmac.new(
-        app_key.encode('utf-8'),
-        request_body,
+        encode_if_not_bytes(app_key),
+        encode_if_not_bytes(request_body),
         hashlib.sha256).hexdigest()
 
 
