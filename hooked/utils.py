@@ -1,8 +1,3 @@
-try:
-    from functools import singledispatch
-except ImportError:
-    from singledispatch import singledispatch
-
 import hashlib
 import hmac
 
@@ -16,7 +11,8 @@ def compute_webhook_validation_key(app_key):
     To successfully respond to incoming webhooks we include this value in
     our response's `X-Application-SHA256` header.
     """
-    return hashlib.sha256(app_key.encode('utf-8')).hexdigest()
+    return hashlib.sha256(
+        encode_if_not_bytes(app_key)).hexdigest()
 
 
 def compute_request_signature(app_key, request_body):
@@ -29,20 +25,17 @@ def compute_request_signature(app_key, request_body):
     that this value matches the data in the request's `X-Gapi-Signature`
     header.
     """
-    request_body = encode_if_not_bytes(request_body)
-
     return hmac.new(
-        app_key.encode('utf-8'),
-        request_body,
+        encode_if_not_bytes(app_key),
+        encode_if_not_bytes(request_body),
         hashlib.sha256).hexdigest()
 
 
-@singledispatch
 def encode_if_not_bytes(data):
+    # This works in Py2 and 3: `bytes` is just an alias for `str` for Python 2
+    # versions since 2.6 (https://docs.python.org/3/whatsnew/2.6.html#pep-3112-byte-literals)
+    if isinstance(data, bytes):
+        return data
+
     data = data.encode('utf-8')
-    return data
-
-
-@encode_if_not_bytes.register(bytes)
-def _(data):
     return data
