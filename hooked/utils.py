@@ -1,8 +1,3 @@
-try:
-    from functools import singledispatch
-except ImportError:
-    from singledispatch import singledispatch
-
 import hashlib
 import hmac
 
@@ -37,12 +32,11 @@ def compute_request_signature(app_key, request_body):
         hashlib.sha256).hexdigest()
 
 
-@singledispatch
 def encode_if_not_bytes(data):
+    # This works in Py2 and 3: `bytes` is just an alias for `str` for Python 2
+    # versions since 2.6 (https://docs.python.org/3/whatsnew/2.6.html#pep-3112-byte-literals)
+    if isinstance(data, bytes):
+        return data
+
     data = data.encode('utf-8')
-    return data
-
-
-@encode_if_not_bytes.register(bytes)
-def _(data):
     return data
