@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 import logging
+import sys
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -21,6 +22,9 @@ logger = logging.getLogger(__name__)
 APP_KEY_SETTING = 'GAPI_APPLICATION_KEY'
 FAIL_ON_MISMATCH_SETTING = 'HOOKED_FAIL_ON_BAD_SIGNATURE'
 DEFAULT_API_ROOT = 'https://rest.gadventures.com/'
+
+# From Python 3-3.5 json.loads only accepts str (and not bytes)
+PY3_TO_35 = sys.version_info[0:2] >= (3, 0) and sys.version_info[0:2] <= (3, 5)
 
 
 class ErrorMessages(object):
@@ -78,8 +82,12 @@ class WebhookReceiverView(View):
     def clean_events(self, request):
         self.check_webhook_signature(request)
 
+        request_body = request.body
+        if PY3_TO_35 and isinstance(request.body, bytes):
+            request_body = str(request.body, encoding='utf-8')
+
         try:
-            events = json.loads(request.body)
+            events = json.loads(request_body)
         except ValueError:
             self.log_failure('Invalid webhook POST', exc_info=True)
             raise ValueError(ErrorMessages.INVALID_JSON)
