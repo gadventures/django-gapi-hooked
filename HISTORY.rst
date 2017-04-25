@@ -5,12 +5,14 @@ History
 
 Unreleased (master branch)
 --------------------------
+* Add Python 3.5+ support (maintaining Python 2.7 support)
 * Add MIT License, begin preparing ``setup.py`` for a release on PyPI
 * Add resource-name-based dynamic dispatch to ``WebhookReceiverView`` (e.g you
   can define a ``handle_profiles`` method on your subclass and it will handle
   ``profiles`` events without having to write your own routing code, see README
   for examples)
-* Add a (presently very small) test suite
+* Add a (presently very small) test suite and a ``tox.ini`` to test multiple
+  Python/Django versions
 * Settings changes:
     * ``GAPI_API_ROOT`` is no longer required, it defaults to
     ``"https://rest.gadventures.com"``
