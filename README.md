@@ -110,4 +110,4 @@ The following is an example of how to register a function to handle hooks for
 
 ## Running tests
 
-    python setup.py pytest
+    tox
