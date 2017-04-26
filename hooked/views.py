@@ -63,7 +63,7 @@ class WebhookReceiverView(View):
         match we just log an error.)
         """
         app_key = getattr(settings, APP_KEY_SETTING)
-        fail_on_mismatch = getattr(settings, FAIL_ON_MISMATCH_SETTING, False)
+        fail_on_mismatch = getattr(settings, FAIL_ON_MISMATCH_SETTING, True)
 
         computed_signature = compute_request_signature(app_key, request.body)
         claimed_signature = request.META.get('HTTP_X_GAPI_SIGNATURE', None)
