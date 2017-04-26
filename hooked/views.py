@@ -49,7 +49,8 @@ class WebhookReceiverView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(WebhookReceiverView, self).dispatch(request, *args, **kwargs)
 
-    def log_failure(self, message, extra={}, **kwargs):
+    def log_failure(self, message, extra=None, **kwargs):
+        extra = extra or {}
         extra['body'] = self.request.body
         logger.warning(message, extra, **kwargs)
 
