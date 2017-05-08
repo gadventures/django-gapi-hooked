@@ -49,8 +49,33 @@ class WebhookReceiverView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(WebhookReceiverView, self).dispatch(request, *args, **kwargs)
 
-    def log_failure(self, message, **kwargs):
-        logger.warning(message, extra={'body': self.request.body}, **kwargs)
+    def _add_request_data_to_log_dict(self, kwargs, request):
+        """
+        Given a "kwargs" dict that is destined for a logging call, insert the
+        request body and headers if it looks like they're not in there already.
+
+        The body will be inserted at kwargs['extra']['request_body'] and
+        the headers will be inserted at kwargs['extra']['request_headers']
+        if there isn't anything already present in those locations.
+        """
+        kwargs['extra'] = kwargs.get('extra', {})
+
+        if 'request_body' not in kwargs['extra']:
+            kwargs['extra']['request_body'] = request.body
+
+        if 'request_headers' not in kwargs['extra']:
+            kwargs['extra']['request_headers'] = {
+                key: val
+                for (key, val) in request.META.items() if key.startswith('HTTP_')
+            }
+
+    def log_error(self, *args, **kwargs):
+        self._add_request_data_to_log_dict(kwargs, self.request)
+        logger.error(*args, **kwargs)
+
+    def log_warning(self, *args, **kwargs):
+        self._add_request_data_to_log_dict(kwargs, self.request)
+        logger.warning(*args, **kwargs)
 
     def check_webhook_signature(self, request):
         """
@@ -71,13 +96,18 @@ class WebhookReceiverView(View):
         if computed_signature == claimed_signature:
             return
 
-        self.log_failure(
+        logger_args = (
             'Mismatch between computed and claimed signature of incoming '
-            'events. I computed {}, but the HTTP header said I should '
-            'expect to find {}'.format(computed_signature, claimed_signature))
+            'events. I computed %s, but the HTTP header said I should '
+            'expect to find %s',
+            computed_signature,
+            claimed_signature)
 
         if fail_on_mismatch:
+            self.log_error(*logger_args)
             raise ValueError(ErrorMessages.INVALID_SIGNATURE)
+
+        self.log_warning(*logger_args)
 
     def clean_events(self, request):
         self.check_webhook_signature(request)
@@ -89,15 +119,15 @@ class WebhookReceiverView(View):
         try:
             events = json.loads(request_body)
         except ValueError:
-            self.log_failure('Invalid webhook POST', exc_info=True)
+            self.log_error('Invalid webhook POST', exc_info=True)
             raise ValueError(ErrorMessages.INVALID_JSON)
 
         if not isinstance(events, list):
-            self.log_failure('Webhook events is not a list')
+            self.log_error('Webhook events is not a list')
             raise ValueError(ErrorMessages.INVALID_EVENT)
 
         if not self.validate_events(events):
-            self.log_failure('Webhook events do not validate')
+            self.log_error('Webhook events do not validate')
             raise ValueError(ErrorMessages.INVALID_EVENT)
         return events
 
@@ -158,7 +188,7 @@ class WebhookReceiverView(View):
         actual = event['data']['href']
 
         if expected != actual:
-            logger.error('Expected webhook href does not equal data (%s != %s)', expected, actual)
+            self.log_error('Expected webhook href does not equal data (%s != %s)', expected, actual)
             return False
 
         return True
