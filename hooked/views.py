@@ -49,8 +49,10 @@ class WebhookReceiverView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(WebhookReceiverView, self).dispatch(request, *args, **kwargs)
 
-    def log_failure(self, message, **kwargs):
-        logger.warning(message, extra={'body': self.request.body}, **kwargs)
+    def log_failure(self, message, extra=None, **kwargs):
+        extra = extra or {}
+        extra['body'] = self.request.body
+        logger.warning(message, extra, **kwargs)
 
     def check_webhook_signature(self, request):
         """
@@ -63,7 +65,7 @@ class WebhookReceiverView(View):
         match we just log an error.)
         """
         app_key = getattr(settings, APP_KEY_SETTING)
-        fail_on_mismatch = getattr(settings, FAIL_ON_MISMATCH_SETTING, False)
+        fail_on_mismatch = getattr(settings, FAIL_ON_MISMATCH_SETTING, True)
 
         computed_signature = compute_request_signature(app_key, request.body)
         claimed_signature = request.META.get('HTTP_X_GAPI_SIGNATURE', None)
@@ -72,9 +74,12 @@ class WebhookReceiverView(View):
             return
 
         self.log_failure(
-            'Mismatch between computed and claimed signature of incoming '
-            'events. I computed {}, but the HTTP header said I should '
-            'expect to find {}'.format(computed_signature, claimed_signature))
+            message='Mismatch between computed and claimed signature of incoming events',
+            extra={
+                'expected_signature': computed_signature,
+                'actual_signature': claimed_signature
+            }
+        )
 
         if fail_on_mismatch:
             raise ValueError(ErrorMessages.INVALID_SIGNATURE)
@@ -89,15 +94,15 @@ class WebhookReceiverView(View):
         try:
             events = json.loads(request_body)
         except ValueError:
-            self.log_failure('Invalid webhook POST', exc_info=True)
+            self.log_failure(message='Invalid webhook POST', exc_info=True)
             raise ValueError(ErrorMessages.INVALID_JSON)
 
         if not isinstance(events, list):
-            self.log_failure('Webhook events is not a list')
+            self.log_failure(message='Webhook events is not a list')
             raise ValueError(ErrorMessages.INVALID_EVENT)
 
         if not self.validate_events(events):
-            self.log_failure('Webhook events do not validate')
+            self.log_failure(message='Webhook events do not validate')
             raise ValueError(ErrorMessages.INVALID_EVENT)
         return events
 

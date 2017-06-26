@@ -34,13 +34,14 @@ following in your settings.
 
 #### Optional
 
-If you'd like your webhook receiver to reject incoming events when the computed
+If you'd like your webhook receiver to accept incoming events when the computed
 signature does not match the signature delivered with the event data, include
 the following in your settings:
 
-    HOOKED_FAIL_ON_BAD_SIGNATURE = True
+    HOOKED_FAIL_ON_BAD_SIGNATURE = False
 
-NB: By default, when a mismatch of signatures occurs we will simply log a warning.
+NB: By default, when a mismatch of signatures occurs we will reject the event and
+log an error.
 
 
 ## Handling events
