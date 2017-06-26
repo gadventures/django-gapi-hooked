@@ -3,8 +3,8 @@
 History
 =======
 
-Unreleased (master branch)
---------------------------
+0.4.0 (2017-06-26)
+------------------
 * Add Python 3.5+ support (maintaining Python 2.7 support)
 * Add MIT License, begin preparing ``setup.py`` for a release on PyPI
 * Add resource-name-based dynamic dispatch to ``WebhookReceiverView`` (e.g you
@@ -16,9 +16,9 @@ Unreleased (master branch)
 * Settings changes:
     * ``GAPI_API_ROOT`` is no longer required, it defaults to
     ``"https://rest.gadventures.com"``
-    
+
     * ``GAPI_APPLICATION_KEY`` is now required
-    
+
     * ``GAPI_WEBHOOKS_VALIDATION_KEY`` is no longer used at all (we compute this
     value from your application key)
 
