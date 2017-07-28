@@ -2,7 +2,7 @@ import sys
 from setuptools import setup
 
 
-if sys.version_info['0'] < 3:
+if sys.version_info[0] < 3:
     # populate `__version__`
     execfile('hooked/version.py')
 else:
