@@ -1,7 +1,13 @@
+import sys
 from setuptools import setup
 
-# populate `__version__`
-execfile('hooked/version.py')
+
+if sys.version_info['0'] < 3:
+    # populate `__version__`
+    execfile('hooked/version.py')
+else:
+    exec(open("hooked/version.py").read())
+
 
 setup(
     name='django-gapi-hooked',
