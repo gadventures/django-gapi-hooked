@@ -6,7 +6,9 @@ if sys.version_info[0] < 3:
     # populate `__version__`
     execfile('hooked/version.py')
 else:
-    exec(open("hooked/version.py").read())
+    version_file = open("hooked/version.py")
+    exec(version_file).read())
+    version_file.close()
 
 
 setup(
