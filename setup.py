@@ -1,14 +1,13 @@
 import sys
 from setuptools import setup
 
+_version_file = 'hooked/version.py'
 
-if sys.version_info[0] < 3:
-    # populate `__version__`
-    execfile('hooked/version.py')
+if sys.version_info.major < 3:
+    execfile(_version_file)
 else:
-    version_file = open("hooked/version.py")
-    exec(version_file.read())
-    version_file.close()
+    with open(_version_file) as vf:
+        exec(vf.read())
 
 
 setup(
