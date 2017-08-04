@@ -3,11 +3,8 @@ from setuptools import setup
 
 _version_file = 'hooked/version.py'
 
-if sys.version_info.major < 3:
-    execfile(_version_file)
-else:
-    with open(_version_file) as vf:
-        exec(vf.read())
+with open(_version_file) as vf:
+    exec(vf.read())
 
 
 setup(
