@@ -7,7 +7,7 @@ if sys.version_info[0] < 3:
     execfile('hooked/version.py')
 else:
     version_file = open("hooked/version.py")
-    exec(version_file).read())
+    exec(version_file).read()
     version_file.close()
 
 
