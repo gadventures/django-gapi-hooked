@@ -3,6 +3,16 @@
 History
 =======
 
+Unreleased
+----------
+* Settings change: ``HOOKED_FAIL_ON_BAD_SIGNATURE`` now defaults to ``True``
+  instead of to ``False``. Note that this means your receiver view will reject
+  webhooks with incorrect signatures.
+
+  If you find that this is happening in production, please ensure that your
+  webhook subscription is using the same application key as is defined in your
+  ``GAPI_APPLICATION_KEY``.
+
 0.4.1 (2017-09-05)
 ------------------
 * Use `exec` to read the `hooked/version.py` file in order to load in the
