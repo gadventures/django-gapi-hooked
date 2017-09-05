@@ -1,5 +1,7 @@
 # django-gapi-hooked
 
+[![Build Status](https://travis-ci.org/gadventures/django-gapi-hooked.svg?branch=master)](https://travis-ci.org/gadventures/django-gapi-hooked)
+
 django-gapi-hooked is a tiny library to add a [G Adventures
 API](https://developers.gadventures.com/) Web Hook receiver view to your code
 base.
