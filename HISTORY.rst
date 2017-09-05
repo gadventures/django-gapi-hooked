@@ -3,6 +3,13 @@
 History
 =======
 
+0.4.1 (2017-09-05)
+------------------
+* Use `exec` to read the `hooked/version.py` file in order to load in the
+  `__version__` variable in `setup.py` (via PRs #15 / #16)
+* Add Travis CI config file to enable testing on Travis (via PR #17)
+    * Add the travis build status to the README.md file
+
 0.4.0 (2017-06-26)
 ------------------
 * Add Python 3.5+ support (maintaining Python 2.7 support)
