@@ -5,13 +5,24 @@ History
 
 Unreleased
 ----------
-* Settings change: ``HOOKED_FAIL_ON_BAD_SIGNATURE`` now defaults to ``True``
-  instead of to ``False``. Note that this means your receiver view will reject
-  webhooks with incorrect signatures.
+* The ``href`` of incoming webhook events is no longer validated. Rejecting an
+  event with an unexpected ``href`` value would simply have resulted in
+  repeated attempts to deliver that event again.
 
-  If you find that this is happening in production, please ensure that your
-  webhook subscription is using the same application key as is defined in your
-  ``GAPI_APPLICATION_KEY``.
+* Incoming webhooks with incorrect signatures will be rejected by default and
+  an error will be logged. If you wish to accept webhooks with incorrect
+  signatures (and simply log a warning), set ``HOOKED_FAIL_ON_BAD_SIGNATURE``
+  to ``False``
+
+  If you believe that your webhook receiver is incorrectly rejecting webhooks,
+  please ensure that your webhook subscription is using the same application
+  key as is defined in your webhook receiver's ``GAPI_APPLICATION_KEY``
+  setting.
+
+* Settings changes:
+    * ``GAPI_API_ROOT`` is no longer used by django-gapi-hooked
+    * ``HOOKED_FAIL_ON_BAD_SIGNATURE`` defaults to ``True`` instead of ``False``
+
 
 0.4.1 (2017-09-05)
 ------------------

@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 APP_KEY_SETTING = 'GAPI_APPLICATION_KEY'
 FAIL_ON_MISMATCH_SETTING = 'HOOKED_FAIL_ON_BAD_SIGNATURE'
-DEFAULT_API_ROOT = 'https://rest.gadventures.com/'
 
 # From Python 3-3.5 json.loads only accepts str (and not bytes)
 PY3_TO_35 = sys.version_info[0:2] >= (3, 0) and sys.version_info[0:2] <= (3, 5)
@@ -166,30 +165,6 @@ class WebhookReceiverView(View):
             for key in ['id', 'href']:
                 if event['data'].get(key) is None:
                     return False
-
-            if not self.is_valid_href(event):
-                return False
-
-        return True
-
-    def is_valid_href(self, event):
-        # Check that the href points to the right place
-        path_parts = [
-            event['resource'],
-            event['data']['id'],
-        ]
-        if 'variation_id' in event['data'] and event['data']['variation_id']:
-            path_parts.append(event['data']['variation_id'])
-
-        expected = urljoin(
-            getattr(settings, 'GAPI_API_ROOT', DEFAULT_API_ROOT),
-            '/'.join(path_parts)
-        )
-        actual = event['data']['href']
-
-        if expected != actual:
-            self.log_error('Expected webhook href does not equal data (%s != %s)', expected, actual)
-            return False
 
         return True
 
