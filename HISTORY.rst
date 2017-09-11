@@ -3,8 +3,8 @@
 History
 =======
 
-Unreleased
-----------
+0.5.0 (2017-09-11)
+------------------
 * The ``href`` of incoming webhook events is no longer validated. Rejecting an
   event with an unexpected ``href`` value would simply have resulted in
   repeated attempts to deliver that event again.
