@@ -1,12 +1,11 @@
 language: python
-
 python:
-    - "2.7"
-    - "3.5"
-    - "3.6"
-
+- '2.7'
+- '3.5'
+- '3.6'
 sudo: false
-
 install: pip install tox-travis
-
 script: tox
+notifications:
+  slack:
+    secure: wRyRtsAir3DVzhna2XMkGFXkLG6UOP0NKYjMxVfuKVEc9TJkOuJmMQrinvr0eNmp7CY9h4JVviY09uWRO0ro0YBu7aZbUL40Lz3JqwmPIVEIL+KiVaN1OgAGtKCJp6rDWBe1S4n90EtDxY1dkRdJNSR6T9oGRloIbwSHdaOl8LJZcptGrcypA+SFl4L5KhCZ6UV65IdhAjPPFrSzQS/EQ4aL9picCzzZo+fq0JYYPTmNRi7TZqC9ZI9V72Fmgu8bb/HSqQtoV/xbU1/DFBsRNsULc5c2LOvi5ShEeIZl9O1Psu0mjsOOGt9yoJHmeqwqLw1KFJuBOUEnOLHNR+ex+LxKYThuXumVkjQbNZW+xeIkTB+lOSnJ0GcWO3BR/PYAHcSluKTN+VmHvB/z221YsINV8we40HgDtS6Lfvn3eurzcVoYccIWIw3kF683y6JMNPPbo8UtPCgLZuYJV9L8xX6xc6Yi8BVRPM1SB7Arqt13xEVzQ60Z0qJZ38RtfrzyiCWTa9O5eeg5iUMRokvxBVDhhequYcv6dy3XuHZ6bXWq7XawCtWUwYg1+xFE3EspR5vmDnIYuI6H8aWC7x8AF0vvkFJk8Srkntv1911EjVztKqh2zRBEoMh88D0ouD2xl1rDjJHNhT3yZYHZEAJ/KOGtR6yNsi0KqUvK9s28GE8=
