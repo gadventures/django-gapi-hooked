@@ -19,7 +19,7 @@ jobs:
     docker:
       - image: circleci/python:2.7
 
- py35:
+  py35:
     <<: *shared
     docker:
       - image: circleci/python:3.5
