@@ -19,7 +19,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install tox tox-pyenv
+            pip install --user tox tox-pyenv
             pyenv local 2.7 3.5 3.6
 
       # - save_cache:
