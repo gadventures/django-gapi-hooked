@@ -1,36 +1,30 @@
 version: 2
+
+shared: &shared
+  working_directory: ~/repo
+  steps:
+    - checkout
+    - run: pip install --user tox
+    - run: tox -e $(echo $(tox --listenvs | grep $TOX_PYTHON_ENV) | sed -e 's/ /,/g')
+
 jobs:
-  build:
+  build_py27:
+    <<: *shared
+    environment:
+      TOX_PYTHON_ENV: py27
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/python:2.7
 
-    working_directory: ~/repo
+  build_py35:
+    <<: *shared
+    environment:
+      TOX_PYTHON_ENV: py35
+    docker:
+      - image: circleci/python:3.5
 
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "requirements.txt" }}
-      #       # fallback to using the latest cache if no exact match is found
-      #       - v1-dependencies-
-
-      - run:
-          name: install dependencies
-          command: |
-            pip install --user tox tox-pyenv
-            pyenv local 2.7 3.5 3.6
-
-      # - save_cache:
-      #     paths:
-      #       - ./venv
-      #     key: v1-dependencies-{{ checksum "requirements.txt" }}
-
-      - run:
-          name: run tests
-          command: tox
-
-      # - store_artifacts:
-      #     path: test-reports
-      #     destination: test-reports
+  build_py36:
+    <<: *shared
+    environment:
+      TOX_PYTHON_ENV: py36
+    docker:
+      - image: circleci/python:3.6
