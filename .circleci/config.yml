@@ -8,30 +8,24 @@ shared: &shared
         name: Install tox
         command: pip install --user tox
     - run:
-        name: Run tox tests
+        name: Run tox tests (for environments that match $CIRCLE_JOB)
         command: |
             export PATH="/home/circleci/.local/bin:$PATH"
-            tox -e $(echo $(tox --listenvs | grep $TOX_PYTHON_ENV) | sed -e 's/ /,/g')
+            tox -e $(echo $(tox --listenvs | grep $CIRCLE_JOB) | sed -e 's/ /,/g')
 
 jobs:
-  build_py27:
+  py27:
     <<: *shared
-    environment:
-      TOX_PYTHON_ENV: py27
     docker:
       - image: circleci/python:2.7
 
-  build_py35:
+ py35:
     <<: *shared
-    environment:
-      TOX_PYTHON_ENV: py35
     docker:
       - image: circleci/python:3.5
 
-  build_py36:
+  py36:
     <<: *shared
-    environment:
-      TOX_PYTHON_ENV: py36
     docker:
       - image: circleci/python:3.6
 
@@ -39,6 +33,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - build_py27
-      - build_py35
-      - build_py36
+      - py27
+      - py35
+      - py36
