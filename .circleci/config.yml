@@ -4,9 +4,14 @@ shared: &shared
   working_directory: ~/repo
   steps:
     - checkout
-    - run: pip install --user tox
-    - run: export PATH="/home/circleci/.local/bin:$PATH"
-    - run: tox -e $(echo $(tox --listenvs | grep $TOX_PYTHON_ENV) | sed -e 's/ /,/g')
+    - run:
+        name: Install tox
+        command: pip install --user tox
+    - run:
+        name: Run tox tests
+        command: |
+            export PATH="/home/circleci/.local/bin:$PATH"
+            tox -e $(echo $(tox --listenvs | grep $TOX_PYTHON_ENV) | sed -e 's/ /,/g')
 
 jobs:
   build_py27:
