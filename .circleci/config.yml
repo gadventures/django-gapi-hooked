@@ -1,0 +1,55 @@
+version: 2
+
+shared: &shared
+  working_directory: ~/repo
+  steps:
+    - checkout
+    - run:
+        name: Install tox
+        command: pip install --user tox
+    - run:
+        name: Run tox tests (for environments that match $CIRCLE_JOB)
+        command: |
+            # Update our PATH to include `tox`
+            export PATH="/home/circleci/.local/bin:$PATH"
+
+            # Filter for `tox` environments that match our Circle job names
+            # (which correspond to Python versions of their Docker images)
+            export MATCHING_ENVS="$(tox --listenvs | grep $CIRCLE_JOB)"
+
+            # Comma-separate the tox environment names, and put 'em into the
+            # env var where `tox` will see them
+            export TOXENV="$(echo $MATCHING_ENVS | sed -e 's/ /,/g')"
+
+            # Run tests
+            tox
+
+jobs:
+  py27:
+    <<: *shared
+    docker:
+      - image: circleci/python:2.7
+
+  py35:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.5
+
+  py36:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.6
+
+  py37:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.7
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - py27
+      - py35
+      - py36
+      - py37
