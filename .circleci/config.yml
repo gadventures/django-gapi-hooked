@@ -10,8 +10,19 @@ shared: &shared
     - run:
         name: Run tox tests (for environments that match $CIRCLE_JOB)
         command: |
+            # Update our PATH to include `tox`
             export PATH="/home/circleci/.local/bin:$PATH"
-            tox -e $(echo $(tox --listenvs | grep $CIRCLE_JOB) | sed -e 's/ /,/g')
+
+            # Filter for `tox` environments that match our Circle job names
+            # (which correspond to Python versions of their Docker images)
+            export MATCHING_ENVS="$(tox --listenvs | grep $CIRCLE_JOB)"
+
+            # Comma-separate the tox environment names, and put 'em into the
+            # env var where `tox` will see them
+            export TOXENV="$(echo $MATCHING_ENVS | sed -e 's/ /,/g')"
+
+            # Run tests
+            tox
 
 jobs:
   py27:
