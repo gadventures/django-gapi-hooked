@@ -1,9 +1,22 @@
+import sys
+
 from setuptools import setup
 
 _version_file = 'hooked/version.py'
 
 with open(_version_file) as vf:
     exec(vf.read())
+
+
+# Include pytest-runner as a setup-requirement only if it looks like we're
+# doing something test-related.
+#
+# This way we can avoid having to install it when, for example, somebody just
+# wants to build/install django-gapi-hooked as a dependency.
+#
+# See: https://pypi.org/project/pytest-runner/#conditional-requirement
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+maybe_pytest_runner = ['pytest-runner'] if needs_pytest else []
 
 
 setup(
@@ -26,9 +39,7 @@ setup(
         'g api',
         'gapipy'
     ],
-    setup_requires=[
-        'pytest-runner',
-    ],
+    setup_requires=maybe_pytest_runner,
     tests_require=[
         'pytest',
         'pytest-django',
