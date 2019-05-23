@@ -3,6 +3,11 @@
 History
 =======
 
+0.5.1 (2018-05-23)
+------------------
+* Changed setup.py so that it does not require pytest-runner unless something
+  test-related is being invoked, for example `setup.py pytest`
+
 0.5.0 (2017-09-11)
 ------------------
 * The ``href`` of incoming webhook events is no longer validated. Rejecting an
