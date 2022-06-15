@@ -1,3 +1,5 @@
 import django.dispatch
 
-webhook_event = django.dispatch.Signal(providing_args=["event"])
+# This signal provides the `event` argument to receivers.
+# See https://github.com/gadventures/django-gapi-hooked#django-signals
+webhook_event = django.dispatch.Signal()
