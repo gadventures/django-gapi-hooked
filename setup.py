@@ -31,7 +31,7 @@ setup(
         'hooked',
     ],
     install_requires=[
-        'django<4',
+        'django',
     ],
     keywords=[
         'gapi',
