@@ -9,9 +9,17 @@ shared: &shared
     - run:
         name: Run tox tests (for environments that match $CIRCLE_JOB)
         command: |
-            # Run tests for the given Python version. The Circle job name
-            # corresponds to the version of Python in use by that job.
-            tox -e ${CIRCLE_JOB}
+            # Filter for `tox` environments that match our Circle job names
+            # (which correspond to Python versions of their Docker images)
+            export MATCHING_ENVS="$(tox --listenvs | grep $CIRCLE_JOB)"
+
+            # Comma-separate the tox environment names, and put 'em into the
+            # env var where `tox` will see them
+            export TOXENV="$(echo $MATCHING_ENVS | sed -e 's/ /,/g')"
+
+            # Run tests
+            tox
+
 jobs:
   py37:
     <<: *shared
