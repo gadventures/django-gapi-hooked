@@ -1,9 +1,12 @@
-from django.conf.urls import url
+try:
+    from django.conf.urls import url as re_path
+except ImportError:
+    from django.urls import re_path
 
 from .views import OurVeryOwnReceiverView
 
 WEBHOOK_URL = 'webhooks/'
 
 urlpatterns = [
-    url(r'^{}$'.format(WEBHOOK_URL), OurVeryOwnReceiverView.as_view()),
+    re_path(r'^{}$'.format(WEBHOOK_URL), OurVeryOwnReceiverView.as_view()),
 ]
