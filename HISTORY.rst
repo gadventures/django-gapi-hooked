@@ -3,6 +3,10 @@
 History
 =======
 
+0.5.2 (2022-06-28)
+------------------
+* Add support for Django 4.0 (PR #26)
+
 0.5.1 (2018-05-23)
 ------------------
 * Changed setup.py so that it does not require pytest-runner unless something
