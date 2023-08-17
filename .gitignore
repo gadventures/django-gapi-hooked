@@ -4,3 +4,4 @@
 .cache
 .eggs
 .tox
+build/

@@ -3,8 +3,8 @@
 History
 =======
 
-0.5.3-dev (Unreleased)
-----------------------
+0.5.3 (Unreleased)
+------------------
 * Add support for Django 4.1, 4.2
 * Add support for Python 3.11
 
