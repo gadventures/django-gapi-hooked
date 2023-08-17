@@ -3,6 +3,11 @@
 History
 =======
 
+0.5.3-dev (Unreleased)
+----------------------
+* Add support for Django 4.1, 4.2
+* Add support for Python 3.11
+
 0.5.2 (2022-06-28)
 ------------------
 * Add support for Django 4.0 (PR #26)
