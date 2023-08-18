@@ -19,6 +19,8 @@ shared: &shared
 
             # Run tests
             tox
+    - store_test_results:
+        path: test-reports
 
 jobs:
   py37:
