@@ -24,18 +24,9 @@ shared: &shared
 
 jobs:
   py27:
+    <<: *shared
     docker:
       - image: cimg/python:2.7
-    steps:
-      - checkout
-      - run:
-          name: Install legacy-Python test dependencies
-          command: |
-            pip install Django==1.11.29 pytest pytest-django
-            pip install -e .
-      - run:
-          name: Run legacy-Python tests
-          command: cd tests && pytest
 
   py37:
     <<: *shared
