@@ -3,6 +3,10 @@
 History
 =======
 
+0.6.0 (2023-08-30)
+------------------
+* Add support for Django 4.1, 4.2; Python 3.11 (PR #27)
+
 0.5.2 (2022-06-28)
 ------------------
 * Add support for Django 4.0 (PR #26)

@@ -10,16 +10,24 @@ base.
 
 First, install django-gapi-hooked into your environment.
 
-    pip install -e git+git@github.com:gadventures/django-gapi-hooked.git@0.5.2#egg=django-gapi-hooked
+    pip install -e git+git@github.com:gadventures/django-gapi-hooked.git@0.6.0#egg=django-gapi-hooked
 
 Then, include the receiver view (or your subclassed version) into your `urls.py`,
 e.g.:
 
+    # For Django 2.0+
+    from django.urls import path
     from hooked import WebhookReceiverView
+    urlpatterns = [
+        path('webhooks/', WebhookReceiverView.as_view(), name='webhooks_endpoint'),
+    ]
 
-    urlpatterns = patterns('',
+    # For Django 1.11
+    from django.conf.urls import url
+    from hooked import WebhookReceiverView
+    urlpatterns = [
         url(r'^webhooks/$', WebhookReceiverView.as_view(), name='webhooks_endpoint'),
-    )
+    ]
 
 Now you'll have an endpoint available at `/webhooks` that will handle a webhook
 event from the G API. The view takes care of responding with a proper SHA256

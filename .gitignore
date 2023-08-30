@@ -4,3 +4,5 @@
 .cache
 .eggs
 .tox
+build/
+test-reports/
