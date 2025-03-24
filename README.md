@@ -10,7 +10,7 @@ base.
 
 First, install django-gapi-hooked into your environment.
 
-    pip install -e git+git@github.com:gadventures/django-gapi-hooked.git@0.6.0#egg=django-gapi-hooked
+    pip install -e git+git@github.com:gadventures/django-gapi-hooked.git@0.7.0#egg=django-gapi-hooked
 
 Then, include the receiver view (or your subclassed version) into your `urls.py`,
 e.g.:
