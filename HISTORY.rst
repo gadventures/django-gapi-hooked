@@ -3,6 +3,11 @@
 History
 =======
 
+0.7.0 (2025-03-24)
+------------------
+* Update package metadata to be compatible with setuptools v78 (PR #28) by
+  replacing "description-file" with "description_file"
+
 0.6.0 (2023-08-30)
 ------------------
 * Add support for Django 4.1, 4.2; Python 3.11 (PR #27)
